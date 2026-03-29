@@ -26,9 +26,9 @@ body {
   margin: 0;
   min-height: 100%;
   background:
-    radial-gradient(circle at top left, rgba(15, 139, 141, 0.14), transparent 32%),
+    radial-gradient(circle at top left, rgba(var(--accent-rgb, 15, 139, 141), 0.14), transparent 32%),
     radial-gradient(circle at top right, rgba(245, 124, 61, 0.1), transparent 26%),
-    linear-gradient(180deg, #f7fbfd 0%, #edf2f7 100%);
+    linear-gradient(180deg, var(--bg-alt) 0%, var(--bg) 100%);
   color: var(--text);
   font-family: var(--sans);
 }
@@ -55,6 +55,10 @@ button {
   gap: 18px;
   min-height: calc(100vh - 44px);
   align-items: start;
+}
+
+.theme-root {
+  min-height: calc(100vh - 44px);
 }
 
 .panel {
@@ -137,8 +141,8 @@ button {
 }
 
 .control-card.drop-target {
-  border-color: rgba(15, 139, 141, 0.38);
-  box-shadow: 0 0 0 2px rgba(15, 139, 141, 0.12), 0 16px 32px rgba(17, 51, 74, 0.12);
+  border-color: rgba(var(--accent-rgb, 15, 139, 141), 0.38);
+  box-shadow: 0 0 0 2px rgba(var(--accent-rgb, 15, 139, 141), 0.12), 0 16px 32px rgba(17, 51, 74, 0.12);
 }
 
 .control-card-header {
@@ -193,15 +197,15 @@ button {
 }
 
 .drag-enabled .drag-handle {
-  background: rgba(15, 139, 141, 0.08);
-  border-color: rgba(15, 139, 141, 0.18);
+  background: rgba(var(--accent-rgb, 15, 139, 141), 0.08);
+  border-color: rgba(var(--accent-rgb, 15, 139, 141), 0.18);
 }
 
 .drag-handle-grip span {
   width: 4px;
   height: 18px;
   border-radius: 999px;
-  background: linear-gradient(180deg, rgba(15, 139, 141, 0.88), rgba(10, 104, 106, 0.54));
+  background: linear-gradient(180deg, rgba(var(--accent-rgb, 15, 139, 141), 0.88), rgba(var(--accent-rgb, 15, 139, 141), 0.54));
 }
 
 .control-card-body {
@@ -266,6 +270,66 @@ button {
   align-content: start;
   justify-items: end;
   gap: 16px;
+}
+
+.theme-switcher {
+  padding: 12px;
+  width: min(100%, 340px);
+  display: grid;
+  gap: 10px;
+}
+
+.theme-switcher-header {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.85rem;
+}
+
+.theme-switcher-header strong {
+  color: var(--text);
+}
+
+.theme-preset-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.theme-swatch {
+  width: 28px;
+  height: 28px;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 255, 255, 0.7);
+  background: var(--swatch);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+  padding: 0;
+}
+
+.theme-swatch.active {
+  box-shadow:
+    0 0 0 2px rgba(var(--accent-rgb, 15, 139, 141), 0.18),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.9);
+}
+
+.theme-color-picker {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.theme-color-picker input[type="color"] {
+  width: 46px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  cursor: pointer;
 }
 
 .mode-switcher {
@@ -366,7 +430,7 @@ button {
   overflow: hidden;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.86)),
-    linear-gradient(135deg, rgba(15, 139, 141, 0.08), rgba(245, 124, 61, 0.05));
+    linear-gradient(135deg, rgba(var(--accent-rgb, 15, 139, 141), 0.08), rgba(245, 124, 61, 0.05));
   border: 1px solid var(--border);
 }
 
@@ -394,7 +458,7 @@ button {
   border: 1px solid var(--border);
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.86)),
-    linear-gradient(135deg, rgba(15, 139, 141, 0.08), rgba(245, 124, 61, 0.05));
+    linear-gradient(135deg, rgba(var(--accent-rgb, 15, 139, 141), 0.08), rgba(245, 124, 61, 0.05));
 }
 
 .leg-stage {
@@ -435,8 +499,8 @@ button {
 .canvas-badge {
   padding: 8px 12px;
   border-radius: 999px;
-  border: 1px solid rgba(15, 139, 141, 0.16);
-  background: rgba(15, 139, 141, 0.08);
+  border: 1px solid rgba(var(--accent-rgb, 15, 139, 141), 0.16);
+  background: rgba(var(--accent-rgb, 15, 139, 141), 0.08);
   color: var(--teal-strong);
   font-size: 0.8rem;
   font-weight: 700;
@@ -700,6 +764,10 @@ input[type="range"] {
   .sidebar-toolbar {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .hero-tools {
+    justify-items: stretch;
   }
 }
 

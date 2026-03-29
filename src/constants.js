@@ -17,6 +17,13 @@ export const SIMULATOR_MODES = [
   }
 ];
 
+export const THEME_PRESETS = [
+  { id: "teal", label: "Teal", accent: "#0f8b8d" },
+  { id: "orange", label: "Orange", accent: "#d96c2f" },
+  { id: "blue", label: "Blue", accent: "#1f6fa8" },
+  { id: "crimson", label: "Crimson", accent: "#c7505d" }
+];
+
 export const DEFAULT_PLANAR2_MODULE_ORDER = [
   "ikfk-settings",
   "link-lengths",
@@ -190,6 +197,11 @@ export function createDefaultAppState() {
   return {
     activeMode: "planar2",
     activeWorkspacePage: "analysis",
+    theme: {
+      mode: "light",
+      presetId: THEME_PRESETS[0].id,
+      accent: THEME_PRESETS[0].accent
+    },
     simulators: {
       planar2: {
         config: createDefaultPlanar2Config(),

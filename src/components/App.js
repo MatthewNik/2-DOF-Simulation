@@ -3,7 +3,8 @@ import {
   createDefaultLeg3Config,
   createDefaultPlanar2Config,
   LEG3_BUILT_IN_PRESETS,
-  PLANAR2_BUILT_IN_PRESETS
+  PLANAR2_BUILT_IN_PRESETS,
+  THEME_PRESETS
 } from "../constants.js";
 import { DraggableControlPanel } from "./DraggableControlPanel.js";
 import { EquationsPanel } from "./EquationsPanel.js";
@@ -104,10 +105,12 @@ export function App() {
   const legPresets = appState.simulators.leg3.presets;
   const planarState = useMemo(() => derivePlanar2State(planarConfig), [planarConfig]);
   const legState = useMemo(() => deriveLeg3State(legConfig), [legConfig]);
+  const theme = appState.theme;
   const activeMode = appState.activeMode;
   const activeConfig = activeMode === "leg3" ? legConfig : planarConfig;
   const activeRobotState = activeMode === "leg3" ? legState : planarState;
   const activeTrajectory = activeMode === "leg3" ? legTrajectory : planarTrajectory;
+  const themeStyle = useMemo(() => createThemeStyle(theme), [theme]);
 
   useEffect(() => {
     saveAppState(appState);
@@ -211,6 +214,16 @@ export function App() {
     setAppState((previous) => ({
       ...previous,
       activeMode: mode
+    }));
+  }
+
+  function updateTheme(patch) {
+    setAppState((previous) => ({
+      ...previous,
+      theme: {
+        ...previous.theme,
+        ...patch
+      }
     }));
   }
 
@@ -858,6 +871,7 @@ export function App() {
         ];
 
   return html`
+    <div className="theme-root" data-theme=${theme.mode} style=${themeStyle}>
     <div className="app-shell">
       <${DraggableControlPanel}
         cards=${activeCards}
@@ -880,6 +894,51 @@ export function App() {
             </p>
           </div>
           <div className="hero-tools">
+            <div className="theme-switcher panel">
+              <div className="theme-switcher-header">
+                <strong>Theme</strong>
+                <span>${theme.mode === "dark" ? "Dark" : "Light"}</span>
+              </div>
+              <div className="toggle-group">
+                <button
+                  type="button"
+                  className=${theme.mode === "light" ? "active" : ""}
+                  onClick=${() => updateTheme({ mode: "light" })}
+                >
+                  Light
+                </button>
+                <button
+                  type="button"
+                  className=${theme.mode === "dark" ? "active" : ""}
+                  onClick=${() => updateTheme({ mode: "dark" })}
+                >
+                  Dark
+                </button>
+              </div>
+              <div className="theme-preset-row">
+                ${THEME_PRESETS.map(
+                  (preset) => html`
+                    <button
+                      key=${preset.id}
+                      type="button"
+                      className=${theme.presetId === preset.id ? "theme-swatch active" : "theme-swatch"}
+                      style=${{ "--swatch": preset.accent }}
+                      onClick=${() => updateTheme({ presetId: preset.id, accent: preset.accent })}
+                      aria-label=${preset.label}
+                      title=${preset.label}
+                    ></button>
+                  `
+                )}
+              </div>
+              <label className="theme-color-picker">
+                <span>Custom Accent</span>
+                <input
+                  type="color"
+                  value=${theme.accent}
+                  onInput=${(event) => updateTheme({ presetId: "custom", accent: event.target.value })}
+                />
+              </label>
+            </div>
             <${ModeSwitcher} activeMode=${activeMode} onChange=${setActiveMode} />
             <div className="hero-badges">
               ${heroBadges.map(
@@ -922,5 +981,45 @@ export function App() {
         </section>
       </main>
     </div>
+    </div>
   `;
+}
+
+function hexToRgb(hex) {
+  const sanitized = hex.replace("#", "");
+  const normalized =
+    sanitized.length === 3
+      ? sanitized
+          .split("")
+          .map((char) => char + char)
+          .join("")
+      : sanitized;
+  const value = Number.parseInt(normalized, 16);
+  return {
+    r: (value >> 16) & 255,
+    g: (value >> 8) & 255,
+    b: value & 255
+  };
+}
+
+function createThemeStyle(theme) {
+  const accent = theme?.accent || "#0f8b8d";
+  const { r, g, b } = hexToRgb(accent);
+  const isDark = theme?.mode === "dark";
+  return {
+    "--teal": accent,
+    "--teal-strong": accent,
+    "--accent-rgb": `${r}, ${g}, ${b}`,
+    "--bg": isDark ? "#0f1720" : "#eef3f7",
+    "--bg-alt": isDark ? "#17232f" : "#f7fbfd",
+    "--panel": isDark ? "rgba(17, 28, 39, 0.82)" : "rgba(255, 255, 255, 0.78)",
+    "--panel-strong": isDark ? "rgba(21, 34, 48, 0.94)" : "rgba(255, 255, 255, 0.92)",
+    "--border": isDark ? "rgba(161, 190, 214, 0.14)" : "rgba(28, 66, 92, 0.14)",
+    "--border-strong": isDark ? "rgba(161, 190, 214, 0.24)" : "rgba(28, 66, 92, 0.24)",
+    "--text": isDark ? "#e8f1f6" : "#173042",
+    "--muted": isDark ? "#9fb7c8" : "#527084",
+    "--shadow": isDark
+      ? "0 18px 45px rgba(1, 10, 18, 0.35)"
+      : "0 18px 45px rgba(17, 51, 74, 0.1)"
+  };
 }

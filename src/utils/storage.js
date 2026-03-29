@@ -53,6 +53,7 @@ function migrateLegacyState(saved) {
     const next = clone(defaultState);
     next.activeMode = saved.activeMode || next.activeMode;
     next.activeWorkspacePage = saved.activeWorkspacePage || next.activeWorkspacePage;
+    next.theme = mergePlainObject(defaultState.theme, saved.theme);
     next.simulators.planar2.config = mergePlainObject(
       createDefaultPlanar2Config(),
       saved.simulators.planar2?.config
