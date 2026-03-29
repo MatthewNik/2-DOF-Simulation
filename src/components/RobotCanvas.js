@@ -55,6 +55,21 @@ function project3D(point, azimuth, elevation) {
   };
 }
 
+function createPlaneGrid3D(extent, step) {
+  const lines = [];
+  for (let value = -extent; value <= extent + 1e-6; value += step) {
+    lines.push([
+      { x: -extent, y: value, z: 0 },
+      { x: extent, y: value, z: 0 }
+    ]);
+    lines.push([
+      { x: value, y: -extent, z: 0 },
+      { x: value, y: extent, z: 0 }
+    ]);
+  }
+  return lines;
+}
+
 function Planar2Canvas({ config, robotState, trajectory, onTargetChange }) {
   const svgRef = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -227,8 +242,11 @@ function Planar2Canvas({ config, robotState, trajectory, onTargetChange }) {
 function Leg3Canvas({ config, robotState, onTargetChange, onCameraChange }) {
   const sideSvgRef = useRef(null);
   const topSvgRef = useRef(null);
+  const previewSvgRef = useRef(null);
   const [draggingSide, setDraggingSide] = useState(false);
   const [draggingTop, setDraggingTop] = useState(false);
+  const [draggingPreview, setDraggingPreview] = useState(false);
+  const orbitRef = useRef(null);
   const sidePoints = [
     robotState.fk.sideView.base,
     robotState.fk.sideView.coxa,
@@ -263,9 +281,29 @@ function Leg3Canvas({ config, robotState, onTargetChange, onCameraChange }) {
     robotState.fk.foot
   ];
   const projected3d = isoPoints.map((point) => project3D(point, cameraAzimuth, cameraElevation));
+  const projectedTarget = project3D(robotState.activeTarget, cameraAzimuth, cameraElevation);
+  const worldExtent = Math.max(config.L1 + config.L2 + config.L3, 0.8);
+  const planeGrid = useMemo(
+    () => createPlaneGrid3D(worldExtent, worldExtent > 2.5 ? 0.5 : 0.25),
+    [worldExtent]
+  );
+  const axes = {
+    origin: project3D({ x: 0, y: 0, z: 0 }, cameraAzimuth, cameraElevation),
+    x: project3D({ x: worldExtent, y: 0, z: 0 }, cameraAzimuth, cameraElevation),
+    y: project3D({ x: 0, y: worldExtent, z: 0 }, cameraAzimuth, cameraElevation),
+    z: project3D({ x: 0, y: 0, z: worldExtent }, cameraAzimuth, cameraElevation)
+  };
   const previewExtent = Math.max(
     0.8,
-    ...projected3d.flatMap((point) => [Math.abs(point.x), Math.abs(point.y)])
+    ...projected3d.flatMap((point) => [Math.abs(point.x), Math.abs(point.y)]),
+    ...planeGrid.flatMap((line) =>
+      line.flatMap((point) => {
+        const projected = project3D(point, cameraAzimuth, cameraElevation);
+        return [Math.abs(projected.x), Math.abs(projected.y)];
+      })
+    ),
+    Math.abs(projectedTarget.x),
+    Math.abs(projectedTarget.y)
   ) + 0.3;
 
   function sideEventToWorld(event) {
@@ -312,6 +350,49 @@ function Leg3Canvas({ config, robotState, onTargetChange, onCameraChange }) {
       },
       { immediate }
     );
+  }
+
+  function handlePreviewPointerDown(event) {
+    event.preventDefault();
+    setDraggingPreview(true);
+    orbitRef.current = {
+      pointerId: event.pointerId,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      azimuthDeg: config.cameraAzimuthDeg,
+      elevationDeg: config.cameraElevationDeg
+    };
+    previewSvgRef.current?.setPointerCapture(event.pointerId);
+  }
+
+  function handlePreviewPointerMove(event) {
+    if (!draggingPreview || !orbitRef.current) {
+      return;
+    }
+
+    const deltaX = event.clientX - orbitRef.current.lastX;
+    const deltaY = event.clientY - orbitRef.current.lastY;
+    const nextAzimuth = orbitRef.current.azimuthDeg + deltaX * 0.45;
+    const nextElevation = Math.max(5, Math.min(80, orbitRef.current.elevationDeg - deltaY * 0.25));
+
+    onCameraChange("cameraAzimuthDeg", nextAzimuth);
+    onCameraChange("cameraElevationDeg", nextElevation);
+
+    orbitRef.current = {
+      ...orbitRef.current,
+      lastX: event.clientX,
+      lastY: event.clientY,
+      azimuthDeg: nextAzimuth,
+      elevationDeg: nextElevation
+    };
+  }
+
+  function handlePreviewPointerUp(event) {
+    setDraggingPreview(false);
+    orbitRef.current = null;
+    if (previewSvgRef.current?.hasPointerCapture(event.pointerId)) {
+      previewSvgRef.current.releasePointerCapture(event.pointerId);
+    }
   }
 
   return html`
@@ -455,30 +536,86 @@ function Leg3Canvas({ config, robotState, onTargetChange, onCameraChange }) {
                 <p>Orbitable engineering view</p>
               </div>
             </div>
-            <div className="mini-stage">
-              <svg viewBox=${`${-previewExtent} ${-previewExtent} ${previewExtent * 2} ${previewExtent * 2}`} width="100%" height="100%">
-                <line x1=${projected3d[0].x} y1=${projected3d[0].y} x2=${projected3d[1].x} y2=${projected3d[1].y} stroke="#173042" strokeWidth=${0.05} strokeLinecap="round" />
-                <line x1=${projected3d[1].x} y1=${projected3d[1].y} x2=${projected3d[2].x} y2=${projected3d[2].y} stroke="#0f8b8d" strokeWidth=${0.05} strokeLinecap="round" />
-                <line x1=${projected3d[2].x} y1=${projected3d[2].y} x2=${projected3d[3].x} y2=${projected3d[3].y} stroke="#184d74" strokeWidth=${0.045} strokeLinecap="round" />
-                ${projected3d.map(
-                  (point, index) => html`
-                    <circle key=${`iso-${index}`} cx=${point.x} cy=${point.y} r=${0.045} fill=${index === 3 ? "#184d74" : "#173042"} />
-                  `
-                )}
-              </svg>
-            </div>
-            <div className="control-grid compact-grid">
-              <label className="compact-label">
-                <span>Camera Azimuth</span>
-                <span>${formatNumber(config.cameraAzimuthDeg, 0)} deg</span>
-              </label>
-              <input type="range" min="-180" max="180" step="1" value=${config.cameraAzimuthDeg} onInput=${(event) => onCameraChange("cameraAzimuthDeg", Number(event.target.value))} />
-              <label className="compact-label">
-                <span>Camera Elevation</span>
-                <span>${formatNumber(config.cameraElevationDeg, 0)} deg</span>
-              </label>
-              <input type="range" min="5" max="80" step="1" value=${config.cameraElevationDeg} onInput=${(event) => onCameraChange("cameraElevationDeg", Number(event.target.value))} />
-            </div>
+            ${config.show3dPreview
+              ? html`
+                  <div className=${draggingPreview ? "mini-stage orbiting" : "mini-stage"}>
+                    <svg
+                      ref=${previewSvgRef}
+                      viewBox=${`${-previewExtent} ${-previewExtent} ${previewExtent * 2} ${previewExtent * 2}`}
+                      width="100%"
+                      height="100%"
+                      onPointerDown=${handlePreviewPointerDown}
+                      onPointerMove=${handlePreviewPointerMove}
+                      onPointerUp=${handlePreviewPointerUp}
+                      onPointerLeave=${() => {
+                        setDraggingPreview(false);
+                        orbitRef.current = null;
+                      }}
+                      style=${{ touchAction: "none" }}
+                    >
+                      ${planeGrid.map((line, index) => {
+                        const start = project3D(line[0], cameraAzimuth, cameraElevation);
+                        const end = project3D(line[1], cameraAzimuth, cameraElevation);
+                        return html`
+                          <line
+                            key=${`plane-${index}`}
+                            x1=${start.x}
+                            y1=${start.y}
+                            x2=${end.x}
+                            y2=${end.y}
+                            stroke="rgba(23, 48, 66, 0.1)"
+                            strokeWidth=${0.018}
+                          />
+                        `;
+                      })}
+
+                      <line x1=${axes.origin.x} y1=${axes.origin.y} x2=${axes.x.x} y2=${axes.x.y} stroke="#f57c3d" strokeWidth=${0.028} />
+                      <line x1=${axes.origin.x} y1=${axes.origin.y} x2=${axes.y.x} y2=${axes.y.y} stroke="#0f8b8d" strokeWidth=${0.028} />
+                      <line x1=${axes.origin.x} y1=${axes.origin.y} x2=${axes.z.x} y2=${axes.z.y} stroke="#184d74" strokeWidth=${0.028} />
+                      <text x=${axes.x.x + 0.06} y=${axes.x.y} fontSize=${0.12} fill="#f57c3d">X</text>
+                      <text x=${axes.y.x + 0.06} y=${axes.y.y} fontSize=${0.12} fill="#0f8b8d">Y</text>
+                      <text x=${axes.z.x + 0.06} y=${axes.z.y} fontSize=${0.12} fill="#184d74">Z</text>
+
+                      <line x1=${projected3d[0].x} y1=${projected3d[0].y} x2=${projected3d[1].x} y2=${projected3d[1].y} stroke="#173042" strokeWidth=${0.05} strokeLinecap="round" />
+                      <line x1=${projected3d[1].x} y1=${projected3d[1].y} x2=${projected3d[2].x} y2=${projected3d[2].y} stroke="#0f8b8d" strokeWidth=${0.05} strokeLinecap="round" />
+                      <line x1=${projected3d[2].x} y1=${projected3d[2].y} x2=${projected3d[3].x} y2=${projected3d[3].y} stroke="#184d74" strokeWidth=${0.045} strokeLinecap="round" />
+                      ${config.footTargetEnabled
+                        ? html`
+                            <g>
+                              <circle cx=${projectedTarget.x} cy=${projectedTarget.y} r=${0.06} fill="none" stroke=${robotState.ik.reachable ? "#f57c3d" : "#d9485f"} strokeWidth=${0.024} />
+                              <line x1=${projectedTarget.x - 0.07} y1=${projectedTarget.y} x2=${projectedTarget.x + 0.07} y2=${projectedTarget.y} stroke=${robotState.ik.reachable ? "#f57c3d" : "#d9485f"} strokeWidth=${0.02} />
+                              <line x1=${projectedTarget.x} y1=${projectedTarget.y - 0.07} x2=${projectedTarget.x} y2=${projectedTarget.y + 0.07} stroke=${robotState.ik.reachable ? "#f57c3d" : "#d9485f"} strokeWidth=${0.02} />
+                            </g>
+                          `
+                        : null}
+                      ${projected3d.map(
+                        (point, index) => html`
+                          <circle key=${`iso-${index}`} cx=${point.x} cy=${point.y} r=${0.045} fill=${index === 3 ? "#184d74" : "#173042"} />
+                        `
+                      )}
+                    </svg>
+                    <div className="orbit-hint">
+                      ${draggingPreview ? "Orbiting preview" : "Drag to orbit the preview"}
+                    </div>
+                  </div>
+                  <div className="control-grid compact-grid">
+                    <label className="compact-label">
+                      <span>Camera Azimuth</span>
+                      <span>${formatNumber(config.cameraAzimuthDeg, 0)} deg</span>
+                    </label>
+                    <input type="range" min="-180" max="180" step="1" value=${config.cameraAzimuthDeg} onInput=${(event) => onCameraChange("cameraAzimuthDeg", Number(event.target.value))} />
+                    <label className="compact-label">
+                      <span>Camera Elevation</span>
+                      <span>${formatNumber(config.cameraElevationDeg, 0)} deg</span>
+                    </label>
+                    <input type="range" min="5" max="80" step="1" value=${config.cameraElevationDeg} onInput=${(event) => onCameraChange("cameraElevationDeg", Number(event.target.value))} />
+                  </div>
+                `
+              : html`
+                  <div className="preview-disabled">
+                    3D preview is disabled. Turn it back on in the display settings card.
+                  </div>
+                `}
           </div>
 
           <div className="section">

@@ -79,6 +79,41 @@ button {
   gap: 12px;
 }
 
+.sidebar-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding: 6px 4px 10px;
+}
+
+.sidebar-toolbar h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.sidebar-toolbar p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
+.layout-toggle {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.88);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.layout-toggle.active {
+  background: linear-gradient(135deg, var(--orange), #dd6433);
+  color: white;
+  border-color: transparent;
+}
+
 .control-card {
   border-radius: 20px;
   border: 1px solid rgba(28, 66, 92, 0.12);
@@ -126,18 +161,43 @@ button {
 }
 
 .drag-handle {
-  display: inline-grid;
-  grid-template-columns: repeat(2, 4px);
-  gap: 4px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
   align-self: center;
-  padding: 10px;
+  padding: 8px 10px;
   border-radius: 12px;
   border: 1px solid var(--border);
   background: rgba(255, 255, 255, 0.72);
+  cursor: default;
+}
+
+.drag-handle-label {
+  font-size: 0.76rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.drag-handle-grip {
+  display: inline-grid;
+  grid-template-columns: repeat(2, 4px);
+  gap: 4px;
   cursor: grab;
 }
 
-.drag-handle span {
+.drag-locked .drag-handle-grip {
+  cursor: not-allowed;
+  opacity: 0.4;
+}
+
+.drag-enabled .drag-handle {
+  background: rgba(15, 139, 141, 0.08);
+  border-color: rgba(15, 139, 141, 0.18);
+}
+
+.drag-handle-grip span {
   width: 4px;
   height: 18px;
   border-radius: 999px;
@@ -343,6 +403,10 @@ button {
 
 .mini-stage {
   min-height: 260px;
+}
+
+.mini-stage.orbiting {
+  cursor: grabbing;
 }
 
 .canvas-section-header,
@@ -590,6 +654,17 @@ input[type="range"] {
   margin-top: 12px;
 }
 
+.orbit-hint,
+.preview-disabled {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--muted);
+  font-size: 0.84rem;
+}
+
 @media (max-width: 1420px) {
   .canvas-card {
     grid-template-columns: 1fr;
@@ -620,6 +695,11 @@ input[type="range"] {
 
   .hero-badges {
     justify-content: flex-start;
+  }
+
+  .sidebar-toolbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 }
 

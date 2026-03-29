@@ -2,6 +2,7 @@ import { html, useState } from "../lib.js";
 import { ControlCard } from "./ControlCard.js";
 
 export function DraggableControlPanel({ cards, order, onReorder }) {
+  const [layoutEditEnabled, setLayoutEditEnabled] = useState(false);
   const [draggedId, setDraggedId] = useState(null);
   const [dropTargetId, setDropTargetId] = useState(null);
   const cardMap = new Map(cards.map((card) => [card.id, card]));
@@ -30,6 +31,23 @@ export function DraggableControlPanel({ cards, order, onReorder }) {
 
   return html`
     <aside className="panel sidebar">
+      <div className="sidebar-toolbar">
+        <div>
+          <h2>Control Modules</h2>
+          <p>${layoutEditEnabled ? "Reorder mode enabled" : "Cards locked for editing controls"}</p>
+        </div>
+        <button
+          type="button"
+          className=${layoutEditEnabled ? "layout-toggle active" : "layout-toggle"}
+          onClick=${() => {
+            setLayoutEditEnabled((previous) => !previous);
+            setDraggedId(null);
+            setDropTargetId(null);
+          }}
+        >
+          ${layoutEditEnabled ? "Lock Cards" : "Move Cards"}
+        </button>
+      </div>
       <div className="control-column">
         ${sortedCards.map(
           (card) => html`
@@ -38,9 +56,13 @@ export function DraggableControlPanel({ cards, order, onReorder }) {
               id=${card.id}
               title=${card.title}
               subtitle=${card.subtitle}
+              dragEnabled=${layoutEditEnabled}
               dragging=${draggedId === card.id}
               dropTarget=${dropTargetId === card.id && draggedId !== card.id}
               onDragStart=${(_event, id) => {
+                if (!layoutEditEnabled) {
+                  return;
+                }
                 setDraggedId(id);
                 setDropTargetId(id);
               }}
@@ -49,12 +71,18 @@ export function DraggableControlPanel({ cards, order, onReorder }) {
                 setDropTargetId(null);
               }}
               onDragOver=${(event, id) => {
+                if (!layoutEditEnabled) {
+                  return;
+                }
                 event.preventDefault();
                 if (dropTargetId !== id) {
                   setDropTargetId(id);
                 }
               }}
               onDrop=${(event, id) => {
+                if (!layoutEditEnabled) {
+                  return;
+                }
                 event.preventDefault();
                 reorderCard(draggedId, id);
                 setDraggedId(null);

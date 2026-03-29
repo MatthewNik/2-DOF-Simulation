@@ -4,6 +4,7 @@ export function ControlCard({
   id,
   title,
   subtitle,
+  dragEnabled = false,
   dragging = false,
   dropTarget = false,
   onDragStart,
@@ -14,6 +15,7 @@ export function ControlCard({
 }) {
   const className = [
     "control-card",
+    dragEnabled ? "drag-enabled" : "drag-locked",
     dragging ? "dragging" : "",
     dropTarget ? "drop-target" : ""
   ]
@@ -23,9 +25,6 @@ export function ControlCard({
   return html`
     <section
       className=${className}
-      draggable="true"
-      onDragStart=${(event) => onDragStart?.(event, id)}
-      onDragEnd=${onDragEnd}
       onDragOver=${(event) => onDragOver?.(event, id)}
       onDrop=${(event) => onDrop?.(event, id)}
     >
@@ -35,8 +34,16 @@ export function ControlCard({
           ${subtitle ? html`<p>${subtitle}</p>` : null}
         </div>
         <button type="button" className="drag-handle" aria-label=${`Drag ${title}`}>
+          <span className="drag-handle-label">${dragEnabled ? "Move" : "Locked"}</span>
+          <span
+            className="drag-handle-grip"
+            draggable=${dragEnabled}
+            onDragStart=${dragEnabled ? (event) => onDragStart?.(event, id) : undefined}
+            onDragEnd=${dragEnabled ? onDragEnd : undefined}
+          >
           <span></span>
           <span></span>
+          </span>
         </button>
       </header>
       <div className="control-card-body">${children}</div>
