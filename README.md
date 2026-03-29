@@ -51,6 +51,7 @@ Output Directory: dist
 6. Click deploy.
 
 The project includes `vercel.json` so Vercel has explicit build settings.
+Vercel runs the build on Linux, so the deploy config uses `npm run build` rather than `npm.cmd run build`.
 
 ## Folder structure
 
