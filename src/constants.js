@@ -21,7 +21,11 @@ export const THEME_PRESETS = [
   { id: "teal", label: "Teal", accent: "#0f8b8d" },
   { id: "orange", label: "Orange", accent: "#d96c2f" },
   { id: "blue", label: "Blue", accent: "#1f6fa8" },
-  { id: "crimson", label: "Crimson", accent: "#c7505d" }
+  { id: "crimson", label: "Crimson", accent: "#c7505d" },
+  { id: "emerald", label: "Emerald", accent: "#2f9d67" },
+  { id: "violet", label: "Violet", accent: "#7c66dc" },
+  { id: "amber", label: "Amber", accent: "#d59b28" },
+  { id: "rose", label: "Rose", accent: "#d1607c" }
 ];
 
 export const DEFAULT_PLANAR2_MODULE_ORDER = [
@@ -200,7 +204,8 @@ export function createDefaultAppState() {
     theme: {
       mode: "light",
       presetId: THEME_PRESETS[0].id,
-      accent: THEME_PRESETS[0].accent
+      accent: THEME_PRESETS[0].accent,
+      panelOpen: false
     },
     simulators: {
       planar2: {

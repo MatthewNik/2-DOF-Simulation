@@ -894,50 +894,63 @@ export function App() {
             </p>
           </div>
           <div className="hero-tools">
-            <div className="theme-switcher panel">
-              <div className="theme-switcher-header">
-                <strong>Theme</strong>
-                <span>${theme.mode === "dark" ? "Dark" : "Light"}</span>
-              </div>
-              <div className="toggle-group">
-                <button
-                  type="button"
-                  className=${theme.mode === "light" ? "active" : ""}
-                  onClick=${() => updateTheme({ mode: "light" })}
-                >
-                  Light
-                </button>
-                <button
-                  type="button"
-                  className=${theme.mode === "dark" ? "active" : ""}
-                  onClick=${() => updateTheme({ mode: "dark" })}
-                >
-                  Dark
-                </button>
-              </div>
-              <div className="theme-preset-row">
-                ${THEME_PRESETS.map(
-                  (preset) => html`
-                    <button
-                      key=${preset.id}
-                      type="button"
-                      className=${theme.presetId === preset.id ? "theme-swatch active" : "theme-swatch"}
-                      style=${{ "--swatch": preset.accent }}
-                      onClick=${() => updateTheme({ presetId: preset.id, accent: preset.accent })}
-                      aria-label=${preset.label}
-                      title=${preset.label}
-                    ></button>
+            <div className="theme-toolbar">
+              <button
+                type="button"
+                className=${theme.panelOpen ? "theme-panel-toggle active" : "theme-panel-toggle"}
+                onClick=${() => updateTheme({ panelOpen: !theme.panelOpen })}
+              >
+                ${theme.panelOpen ? "Hide Theme" : "Show Theme"}
+              </button>
+              ${theme.panelOpen
+                ? html`
+                    <div className="theme-switcher panel">
+                      <div className="theme-switcher-header">
+                        <strong>Theme</strong>
+                        <span>${theme.mode === "dark" ? "Dark" : "Light"}</span>
+                      </div>
+                      <div className="toggle-group">
+                        <button
+                          type="button"
+                          className=${theme.mode === "light" ? "active" : ""}
+                          onClick=${() => updateTheme({ mode: "light" })}
+                        >
+                          Light
+                        </button>
+                        <button
+                          type="button"
+                          className=${theme.mode === "dark" ? "active" : ""}
+                          onClick=${() => updateTheme({ mode: "dark" })}
+                        >
+                          Dark
+                        </button>
+                      </div>
+                      <div className="theme-preset-row">
+                        ${THEME_PRESETS.map(
+                          (preset) => html`
+                            <button
+                              key=${preset.id}
+                              type="button"
+                              className=${theme.presetId === preset.id ? "theme-swatch active" : "theme-swatch"}
+                              style=${{ "--swatch": preset.accent }}
+                              onClick=${() => updateTheme({ presetId: preset.id, accent: preset.accent })}
+                              aria-label=${preset.label}
+                              title=${preset.label}
+                            ></button>
+                          `
+                        )}
+                      </div>
+                      <label className="theme-color-picker">
+                        <span>Custom Accent</span>
+                        <input
+                          type="color"
+                          value=${theme.accent}
+                          onInput=${(event) => updateTheme({ presetId: "custom", accent: event.target.value })}
+                        />
+                      </label>
+                    </div>
                   `
-                )}
-              </div>
-              <label className="theme-color-picker">
-                <span>Custom Accent</span>
-                <input
-                  type="color"
-                  value=${theme.accent}
-                  onInput=${(event) => updateTheme({ presetId: "custom", accent: event.target.value })}
-                />
-              </label>
+                : null}
             </div>
             <${ModeSwitcher} activeMode=${activeMode} onChange=${setActiveMode} />
             <div className="hero-badges">
@@ -1018,6 +1031,12 @@ function createThemeStyle(theme) {
     "--border-strong": isDark ? "rgba(161, 190, 214, 0.24)" : "rgba(28, 66, 92, 0.24)",
     "--text": isDark ? "#e8f1f6" : "#173042",
     "--muted": isDark ? "#9fb7c8" : "#527084",
+    "--surface-soft": isDark ? "rgba(255, 255, 255, 0.05)" : "rgba(255, 255, 255, 0.58)",
+    "--surface-card": isDark ? "rgba(255, 255, 255, 0.08)" : "rgba(255, 255, 255, 0.72)",
+    "--surface-input": isDark ? "rgba(12, 20, 29, 0.94)" : "rgba(255, 255, 255, 0.95)",
+    "--surface-strong": isDark ? "rgba(255, 255, 255, 0.1)" : "rgba(255, 255, 255, 0.92)",
+    "--canvas-top": isDark ? "rgba(25, 37, 50, 0.98)" : "rgba(255, 255, 255, 0.96)",
+    "--canvas-bottom": isDark ? "rgba(18, 28, 40, 0.9)" : "rgba(247, 251, 253, 0.86)",
     "--shadow": isDark
       ? "0 18px 45px rgba(1, 10, 18, 0.35)"
       : "0 18px 45px rgba(17, 51, 74, 0.1)"

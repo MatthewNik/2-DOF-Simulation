@@ -272,6 +272,26 @@ button {
   gap: 16px;
 }
 
+.theme-toolbar {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+}
+
+.theme-panel-toggle {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 14px;
+  background: var(--surface-strong, rgba(255, 255, 255, 0.92));
+  color: var(--text);
+}
+
+.theme-panel-toggle.active {
+  background: linear-gradient(135deg, var(--teal), var(--teal-strong));
+  color: white;
+  border-color: transparent;
+}
+
 .theme-switcher {
   padding: 12px;
   width: min(100%, 340px);
@@ -338,7 +358,7 @@ button {
   gap: 8px;
   padding: 8px;
   border-radius: 18px;
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-card, rgba(255, 255, 255, 0.72));
   border: 1px solid var(--border);
 }
 
@@ -349,7 +369,7 @@ button {
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.88);
+  background: var(--surface-strong, rgba(255, 255, 255, 0.88));
   color: var(--text);
   transition:
     transform 160ms ease,
@@ -385,7 +405,7 @@ button {
   padding: 8px 12px;
   border-radius: 999px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.75);
+  background: var(--surface-card, rgba(255, 255, 255, 0.75));
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--teal-strong);
@@ -429,7 +449,7 @@ button {
   border-radius: 20px;
   overflow: hidden;
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.86)),
+    linear-gradient(180deg, var(--canvas-top, rgba(255, 255, 255, 0.96)), var(--canvas-bottom, rgba(247, 251, 253, 0.86))),
     linear-gradient(135deg, rgba(var(--accent-rgb, 15, 139, 141), 0.08), rgba(245, 124, 61, 0.05));
   border: 1px solid var(--border);
 }
@@ -457,7 +477,7 @@ button {
   border-radius: 18px;
   border: 1px solid var(--border);
   background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(247, 251, 253, 0.86)),
+    linear-gradient(180deg, var(--canvas-top, rgba(255, 255, 255, 0.96)), var(--canvas-bottom, rgba(247, 251, 253, 0.86))),
     linear-gradient(135deg, rgba(var(--accent-rgb, 15, 139, 141), 0.08), rgba(245, 124, 61, 0.05));
 }
 
@@ -510,7 +530,7 @@ button {
   padding: 16px;
   border-radius: 18px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.58);
+  background: var(--surface-soft, rgba(255, 255, 255, 0.58));
 }
 
 .control-grid,
@@ -583,7 +603,7 @@ textarea {
   border: 1px solid var(--border-strong);
   border-radius: 12px;
   padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.95);
+  background: var(--surface-input, rgba(255, 255, 255, 0.95));
   color: var(--text);
 }
 
@@ -603,7 +623,7 @@ input[type="range"] {
   padding: 12px;
   border-radius: 14px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.72);
+  background: var(--surface-card, rgba(255, 255, 255, 0.72));
 }
 
 .info-card strong,
@@ -724,9 +744,41 @@ input[type="range"] {
   padding: 10px 12px;
   border-radius: 12px;
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.78);
+  background: var(--surface-card, rgba(255, 255, 255, 0.78));
   color: var(--muted);
   font-size: 0.84rem;
+}
+
+.theme-root[data-theme="dark"] .hero,
+.theme-root[data-theme="dark"] .page-switch,
+.theme-root[data-theme="dark"] .state-panel,
+.theme-root[data-theme="dark"] .math-panel,
+.theme-root[data-theme="dark"] .canvas-card,
+.theme-root[data-theme="dark"] .control-card,
+.theme-root[data-theme="dark"] .theme-switcher,
+.theme-root[data-theme="dark"] .mode-switcher {
+  background: linear-gradient(180deg, rgba(25, 38, 52, 0.92), rgba(16, 25, 36, 0.94));
+}
+
+.theme-root[data-theme="dark"] .control-card,
+.theme-root[data-theme="dark"] .theme-switcher,
+.theme-root[data-theme="dark"] .mode-switcher,
+.theme-root[data-theme="dark"] .section,
+.theme-root[data-theme="dark"] .info-card,
+.theme-root[data-theme="dark"] .kv,
+.theme-root[data-theme="dark"] .status-pill,
+.theme-root[data-theme="dark"] input[type="number"],
+.theme-root[data-theme="dark"] select,
+.theme-root[data-theme="dark"] textarea {
+  border-color: rgba(161, 190, 214, 0.16);
+}
+
+.theme-root[data-theme="dark"] .badge {
+  color: #d7edf5;
+}
+
+.theme-root[data-theme="dark"] .badge.warn {
+  color: #ff9cad;
 }
 
 @media (max-width: 1420px) {
