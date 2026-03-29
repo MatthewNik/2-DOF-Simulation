@@ -156,11 +156,12 @@ button {
 .control-card-header h3 {
   margin: 0;
   font-size: 1.08rem;
+  color: var(--heading, var(--text));
 }
 
 .control-card-header p {
   margin: 6px 0 0;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.86rem;
 }
 
@@ -256,11 +257,12 @@ button {
   font-size: clamp(1.9rem, 2.5vw, 2.9rem);
   line-height: 1.05;
   letter-spacing: -0.03em;
+  color: var(--heading, var(--text));
 }
 
 .hero p {
   margin: 0;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 1rem;
   line-height: 1.55;
 }
@@ -303,12 +305,12 @@ button {
   display: flex;
   justify-content: space-between;
   gap: 12px;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.85rem;
 }
 
 .theme-switcher-header strong {
-  color: var(--text);
+  color: var(--heading, var(--text));
 }
 
 .theme-preset-row {
@@ -338,7 +340,7 @@ button {
   justify-content: space-between;
   align-items: center;
   gap: 12px;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.84rem;
 }
 
@@ -507,13 +509,14 @@ button {
 .section h4,
 .section-header h2 {
   margin: 0 0 8px;
+  color: var(--heading, var(--text));
 }
 
 .canvas-section-header p,
 .section-header small,
 .subtle {
   margin: 0;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
 }
 
 .canvas-badge {
@@ -558,7 +561,7 @@ button {
 
 .control-row label span:last-child,
 .compact-label span:last-child {
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.82rem;
   font-family: var(--mono);
 }
@@ -631,7 +634,7 @@ input[type="range"] {
 .status-pill strong {
   display: block;
   font-size: 0.78rem;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   text-transform: uppercase;
   letter-spacing: 0.05em;
   margin-bottom: 6px;
@@ -666,7 +669,7 @@ input[type="range"] {
 
 .math-caption,
 .footer-note {
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.84rem;
   line-height: 1.55;
 }
@@ -687,7 +690,7 @@ input[type="range"] {
   display: flex;
   align-items: center;
   gap: 10px;
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.9rem;
 }
 
@@ -745,7 +748,7 @@ input[type="range"] {
   border-radius: 12px;
   border: 1px solid var(--border);
   background: var(--surface-card, rgba(255, 255, 255, 0.78));
-  color: var(--muted);
+  color: var(--subtle-text, var(--muted));
   font-size: 0.84rem;
 }
 
@@ -779,6 +782,48 @@ input[type="range"] {
 
 .theme-root[data-theme="dark"] .badge.warn {
   color: #ff9cad;
+}
+
+.theme-root[data-theme="dark"] h1,
+.theme-root[data-theme="dark"] h2,
+.theme-root[data-theme="dark"] h3,
+.theme-root[data-theme="dark"] h4,
+.theme-root[data-theme="dark"] strong,
+.theme-root[data-theme="dark"] label,
+.theme-root[data-theme="dark"] p,
+.theme-root[data-theme="dark"] span,
+.theme-root[data-theme="dark"] div,
+.theme-root[data-theme="dark"] summary,
+.theme-root[data-theme="dark"] text {
+  color: var(--text);
+}
+
+.theme-root[data-theme="dark"] .hero-kicker,
+.theme-root[data-theme="dark"] .canvas-badge,
+.theme-root[data-theme="dark"] .theme-switcher-header span,
+.theme-root[data-theme="dark"] .control-card-header p,
+.theme-root[data-theme="dark"] .canvas-section-header p,
+.theme-root[data-theme="dark"] .section-header small,
+.theme-root[data-theme="dark"] .footer-note,
+.theme-root[data-theme="dark"] .math-caption,
+.theme-root[data-theme="dark"] .subtle,
+.theme-root[data-theme="dark"] .legend-item,
+.theme-root[data-theme="dark"] .orbit-hint,
+.theme-root[data-theme="dark"] .preview-disabled,
+.theme-root[data-theme="dark"] .control-row label span:last-child,
+.theme-root[data-theme="dark"] .compact-label span:last-child,
+.theme-root[data-theme="dark"] .info-card strong,
+.theme-root[data-theme="dark"] .kv strong,
+.theme-root[data-theme="dark"] .status-pill strong {
+  color: var(--subtle-text);
+}
+
+.theme-root[data-theme="dark"] textarea,
+.theme-root[data-theme="dark"] input,
+.theme-root[data-theme="dark"] select,
+.theme-root[data-theme="dark"] .code-output,
+.theme-root[data-theme="dark"] .json-preview pre {
+  color: #f5f9fc;
 }
 
 @media (max-width: 1420px) {
