@@ -44,13 +44,13 @@ npm.cmd run build
 5. If prompted, use:
 
 ```text
-Build Command: npm.cmd run build
+Build Command: npm run build
 Output Directory: dist
 ```
 
 6. Click deploy.
 
-The project includes [vercel.json](C:\Users\matth\Documents\Software Grind\2 DOF Planar Simulation\vercel.json) so Vercel has explicit build settings.
+The project includes `vercel.json` so Vercel has explicit build settings.
 
 ## Folder structure
 
@@ -95,7 +95,7 @@ The intermediate joint position and end-effector position are both computed ever
 IK uses the closed-form geometric solution:
 
 - `cos(theta2) = (x^2 + y^2 - L1^2 - L2^2) / (2 L1 L2)`
-- `theta2 = atan2(±sqrt(1 - cos^2(theta2)), cos(theta2))`
+- `theta2 = atan2(+-sqrt(1 - cos^2(theta2)), cos(theta2))`
 - `theta1 = atan2(y, x) - atan2(L2 sin(theta2), L1 + L2 cos(theta2))`
 
 The implementation clamps `cos(theta2)` into `[-1, 1]` for numerical stability, while separately reporting whether the original target is actually reachable. That makes boundary behavior stable and gives a sensible projected pose for unreachable targets.
